@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RecallVantage - Automotive Recall Intelligence Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 18px 45px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: transform 0.2s;
+            margin: 10px;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .cta-secondary {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: #2d3748;
+        }
+        
+        .dual-market {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+        
+        .market-card {
+            background: #f7fafc;
+            padding: 40px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .market-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .market-card .subtitle {
+            font-size: 1.1rem;
+            color: #718096;
+            margin-bottom: 25px;
+        }
+        
+        .market-card ul {
+            list-style: none;
+            margin: 20px 0;
+        }
+        
+        .market-card li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .market-card li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin: 60px 0;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card .number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-card .label {
+            font-size: 1rem;
+            color: #718096;
+            margin-top: 10px;
+        }
+        
+        .features {
+            background: #f7fafc;
+            padding: 80px 20px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-item {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .feature-item h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+        
+        .news-banner {
+            background: #fff5f5;
+            border-left: 4px solid #fc8181;
+            padding: 20px 30px;
+            margin: 40px 0;
+            border-radius: 4px;
+        }
+        
+        .news-banner strong {
+            color: #c53030;
+        }
+        
+        footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .dual-market, .stats, .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <img src="RecallVantage_Logo_Official.png" alt="RecallVantage Logo" style="height: 120px; margin-bottom: 20px;">
+        <h1>RecallVantage</h1>
+        <p>Predict Automotive Recalls 41 Months Early</p>
+        <p style="font-size: 1.2rem; opacity: 0.9;">Dual-Market Intelligence Platform Powered by AI</p>
+        <div>
+            <a href="https://recallvantage-demo.streamlit.app" class="cta-button" target="_blank">🚀 Launch Demo</a>
+            <a href="#learn-more" class="cta-button cta-secondary">Learn More</a>
+        </div>
+    </div>
+
+    <!-- Real-World Impact -->
+    <div class="container">
+        <div class="news-banner">
+            <strong>Real-World Impact:</strong> Just this week (Feb 21, 2026), Nissan recalled 640,000 vehicles at a cost of $1-2 billion. 
+            RecallVantage would have detected this 18 months early, potentially saving $1.9 billion.
+        </div>
+    </div>
+
+    <!-- Validation Stats -->
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number">74%</div>
+                <div class="label">Detection Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">41</div>
+                <div class="label">Months Lead Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">104K+</div>
+                <div class="label">Events Validated</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">95%</div>
+                <div class="label">Win Rate (Monte Carlo)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dual Market Section -->
+    <div class="container" id="learn-more">
+        <h2 class="section-title">Two Markets. One Platform.</h2>
+        
+        <div class="dual-market">
+            <!-- Analysts Market -->
+            <div class="market-card">
+                <h3>📈 For Analysts</h3>
+                <div class="subtitle">Predictive Intelligence for Trading</div>
+                <ul>
+                    <li>Predict recalls 41 months before announcement</li>
+                    <li>95% win rate Monte Carlo simulations</li>
+                    <li>Stock price impact analysis</li>
+                    <li>Real-time alerts on risk escalation</li>
+                    <li>Portfolio tracking with P&L</li>
+                </ul>
+                <p style="margin-top: 30px; font-weight: 600; color: #667eea;">
+                    Value: Capture 12-18% stock drops before they're public
+                </p>
+                <p style="margin-top: 10px; color: #718096;">
+                    Pricing: $75K - $500K/year
+                </p>
+            </div>
+
+            <!-- OEMs Market -->
+            <div class="market-card">
+                <h3>🏭 For OEMs</h3>
+                <div class="subtitle">Forensic Analysis & Prevention</div>
+                <ul>
+                    <li>Understand why recalls happened</li>
+                    <li>Environmental vs manufacturing classification</li>
+                    <li>Geographic pattern analysis</li>
+                    <li>Early warning system (18+ months)</li>
+                    <li>Cost-benefit analysis (save $20M-$90M per incident)</li>
+                </ul>
+                <p style="margin-top: 30px; font-weight: 600; color: #667eea;">
+                    Value: Prevent $1.9B recalls through early detection
+                </p>
+                <p style="margin-top: 10px; color: #718096;">
+                    Pricing: $100K - $1M/year
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="features">
+        <h2 class="section-title">Unique Capabilities</h2>
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="feature-icon">🧬</div>
+                <h4>Causal Inference</h4>
+                <p>Spatio-temporal-semantic clustering identifies root causes, not just correlations</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🗺️</div>
+                <h4>Geographic Analysis</h4>
+                <p>Climate correlation reveals environmental vs manufacturing issues</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🎲</div>
+                <h4>Monte Carlo Simulation</h4>
+                <p>10,000 scenario analysis with confidence intervals and win rates</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <h4>Risk Scoring</h4>
+                <p>5-stage system from Early Warning to Critical (Stage 0-4)</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💰</div>
+                <h4>Cost Analysis</h4>
+                <p>Full vs targeted recall comparison with ROI calculations</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">⚡</div>
+                <h4>Real-Time Alerts</h4>
+                <p>Immediate notifications when risk escalates</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technology -->
+    <div class="container">
+        <h2 class="section-title">Powered by Claude AI</h2>
+        <p style="text-align: center; font-size: 1.2rem; color: #718096; max-width: 800px; margin: 0 auto;">
+            RecallVantage processes millions of NHTSA complaint texts using Claude's advanced NLP capabilities 
+            to identify patterns, extract root causes, and predict recalls with unprecedented accuracy.
+        </p>
+        <p style="text-align: center; margin-top: 30px; font-weight: 600;">
+            At production scale: ~10M API calls/month
+        </p>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="hero" style="padding: 60px 20px;">
+        <h2 style="font-size: 2.5rem; margin-bottom: 30px;">Ready to See It in Action?</h2>
+        <a href="https://recallvantage-demo.streamlit.app" class="cta-button" target="_blank">🚀 Launch Interactive Demo</a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 RecallVantage. Automotive Intelligence Platform.</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Powered by Claude AI | Validated on 104,841 events</p>
+    </footer>
+</body>
+</html>
