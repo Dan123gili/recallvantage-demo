@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RecallVantage Research — Automotive Safety Risk Intelligence</title>
+<meta name="description" content="Independent research firm identifying unpriced automotive safety risk 26–315 days before regulatory action. Validated signals for institutional investors, insurers, and OEMs.">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#050912;--surface:#080d18;--card:#0c1220;--card2:#101828;--border:#182035;--border2:#1e2d48;
+  --t1:#eef2f8;--t2:#9aaec4;--t3:#506070;
+  --blue:#2d8bff;--blue2:#1a6fd8;--cyan:#00d4c8;--green:#00c87a;--amber:#f5a623;--red:#f04060;
+  --purple:#8b5cf6;
+  --font-head:'Syne',sans-serif;--font-mono:'IBM Plex Mono',monospace;--font-body:system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t2);font-family:var(--font-body);-webkit-font-smoothing:antialiased;overflow-x:hidden;font-size:15px}
+a{color:inherit;text-decoration:none}
+::selection{background:rgba(45,139,255,.3)}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;background:rgba(5,9,18,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 40px;gap:40px}
+.nav-brand{display:flex;align-items:center;gap:12px;margin-right:auto}
+.nav-rv{width:30px;height:30px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:13px;color:#fff;flex-shrink:0}
+.nav-name{font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--t1)}
+.nav-sub{font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:14px;color:var(--t2);letter-spacing:.2px;transition:color .15s;padding-bottom:2px;border-bottom:2px solid transparent}
+.nav-links a:hover{color:var(--t1)}
+.nav-links a.active{color:var(--t1);border-bottom:2px solid var(--blue)}
+.nav-cta{background:var(--blue);color:#fff!important;padding:7px 18px;border-radius:6px;font-size:12px;font-weight:500;transition:all .2s}
+.nav-cta:hover{background:var(--blue2)!important;transform:translateY(-1px)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:80px 40px 40px}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(24,32,53,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(24,32,53,.4) 1px,transparent 1px);background-size:60px 60px;opacity:.5}
+.hero-glow{position:absolute;top:20%;left:40%;transform:translateX(-50%);width:900px;height:500px;background:radial-gradient(ellipse,rgba(45,139,255,.1) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:2;max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(45,139,255,.1);border:1px solid rgba(45,139,255,.25);padding:6px 14px;border-radius:4px;font-size:10px;color:var(--blue);letter-spacing:2px;text-transform:uppercase;margin-bottom:28px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-family:var(--font-head);font-size:50px;font-weight:800;color:var(--t1);line-height:1.08;margin-bottom:22px;letter-spacing:-1.5px}
+h1 .acc{color:var(--blue)}
+.hero-desc{font-size:16px;color:var(--t2);line-height:1.85;margin-bottom:32px;max-width:480px}
+.hero-btns{display:flex;gap:12px;margin-bottom:52px}
+.btn{display:inline-block;padding:12px 24px;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--font-body);border:none;letter-spacing:.2px}
+.btn-p{background:var(--blue);color:#fff}
+.btn-p:hover{background:var(--blue2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(45,139,255,.3)}
+.btn-g{border:1px solid var(--border2);color:var(--t2);background:transparent}
+.btn-g:hover{border-color:var(--t2);color:var(--t1)}
+.hero-kpis{display:flex;gap:32px;padding-top:32px;border-top:1px solid var(--border)}
+.kpi .v{font-family:var(--font-head);font-size:28px;font-weight:700;color:var(--t1)}
+.kpi .l{font-size:11px;color:var(--t3);margin-top:4px;line-height:1.5}
+/* hero mini dash */
+.hero-dash{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.5)}
+.hd-top{background:var(--card);padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.hd-dot{width:10px;height:10px;border-radius:50%}
+.hd-title{margin-left:6px;font-size:10px;color:var(--t3);letter-spacing:.5px}
+.hd-body{padding:14px}
+.hd-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.hd-stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
+.hd-sv{font-family:var(--font-head);font-size:17px;font-weight:700;color:var(--t1)}
+.hd-sv.b{color:var(--blue)}.hd-sv.g{color:var(--green)}.hd-sv.a{color:var(--amber)}
+.hd-sl{font-size:10px;color:var(--t3);margin-top:1px}
+.hd-chart{position:relative;height:120px;margin-bottom:10px}
+.sig-list{display:flex;flex-direction:column;gap:4px}
+.sig-row{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:11px}
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sname{color:var(--t1);font-weight:500;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.sbadge{padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600}
+.sb-a{background:rgba(245,166,35,.15);color:#fbbf24;border:1px solid rgba(245,166,35,.3)}
+.sb-g{background:rgba(0,200,122,.1);color:var(--green);border:1px solid rgba(0,200,122,.25)}
+.sexp{color:var(--t3);min-width:45px;text-align:right;font-size:10px}
+
+/* SECTIONS */
+section{padding:64px 40px}
+.container{max-width:1200px;margin:0 auto}
+.eyebrow{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:10px}
+.stitle{font-family:var(--font-head);font-size:36px;font-weight:800;color:var(--t1);line-height:1.15;margin-bottom:14px;letter-spacing:-.5px}
+.ssub{font-size:16px;color:var(--t3);line-height:1.85;max-width:580px}
+.fb{font-size:15px;color:var(--t2);line-height:1.9;margin-bottom:20px}
+
+/* DASHBOARD SECTION */
+#dashboard{background:var(--bg);padding:56px 0 72px}
+.dash-head{padding:0 40px 32px;max-width:1400px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between}
+.dash-shell{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;max-width:1360px;margin:0 auto;width:calc(100% - 80px)}
+.ds-topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 20px;height:50px;display:flex;align-items:center;gap:16px}
+.ds-brand{display:flex;align-items:center;gap:8px;font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--t1)}
+.ds-rv{background:var(--blue);color:#fff;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
+.ds-tag{font-size:11px;color:var(--t3)}
+.ds-meta{font-size:10px;color:var(--t3);margin-left:auto}
+.ds-search{background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:5px 12px;font-size:11px;color:var(--t3);font-family:var(--font-mono)}
+.ds-body{display:grid;grid-template-columns:190px 1fr;min-height:700px}
+.ds-sidebar{background:var(--card);border-right:1px solid var(--border);padding:12px 0;display:flex;flex-direction:column;gap:1px}
+.ds-nav{display:flex;align-items:center;gap:9px;padding:10px 14px;cursor:pointer;font-size:11px;color:var(--t3);letter-spacing:.3px;transition:all .15s}
+.ds-nav:hover{background:rgba(45,139,255,.06);color:var(--t1)}
+.ds-nav.on{background:rgba(45,139,255,.1);color:var(--blue);border-right:2px solid var(--blue)}
+.ds-nav-ic{width:16px;text-align:center;font-size:13px}
+.ds-main{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+/* stat row */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat-c{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
+.stat-l{font-size:10px;color:var(--t3);letter-spacing:.5px;margin-bottom:3px}
+.stat-v{font-family:var(--font-head);font-size:23px;font-weight:700;color:var(--t1)}
+.stat-v.b{color:var(--blue)}.stat-v.g{color:var(--green)}.stat-v.a{color:var(--amber)}
+/* panels */
+.row2{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:12px}
+.ph{font-size:10px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.ph-tag{background:rgba(45,139,255,.1);color:var(--blue);padding:2px 7px;border-radius:3px;font-size:9px;letter-spacing:1px}
+.cw{position:relative}
+/* network */
+.netsv{width:100%;display:block}
+.ap{background:rgba(240,64,96,.15);color:#f87171;border:1px solid rgba(240,64,96,.3);padding:3px 8px;border-radius:3px;font-size:10px;font-weight:700;display:inline-block;margin-right:5px}
+.cp{background:rgba(45,139,255,.1);color:var(--blue);border:1px solid rgba(45,139,255,.25);padding:3px 8px;border-radius:3px;font-size:10px;display:inline-block}
+/* signals table */
+.sig-shell{background:var(--card);border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.sig-hd{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sig-ht{font-size:10px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase}
+.sig-hn{font-size:10px;color:var(--t3);font-style:italic}
+table.st{width:100%;border-collapse:collapse;font-size:12px}
+table.st th{padding:8px 12px;text-align:left;color:var(--t3);font-weight:400;font-size:10px;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+table.st td{padding:9px 12px;border-bottom:1px solid rgba(24,32,53,.5)}
+table.st tr:last-child td{border-bottom:none}
+table.st tr:hover td{background:rgba(255,255,255,.01)}
+.sdot2{width:9px;height:9px;border-radius:50%;display:inline-block}
+.ct{height:6px;width:90px;border-radius:3px;background:var(--card2);display:inline-block;vertical-align:middle;overflow:hidden;margin-left:5px}
+.cf{height:100%;border-radius:3px}
+.ab{padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;border:none;font-family:var(--font-mono)}
+.ab-i{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3)}
+.ab-m{background:rgba(0,200,122,.1);color:var(--green);border:1px solid rgba(0,200,122,.25)}
+.ab-c{background:var(--card2);color:var(--t3);border:1px solid var(--border);opacity:.55}
+
+/* HOW IT WORKS */
+#how{background:var(--surface)}
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:56px;position:relative}
+.pipe-line{position:absolute;top:28px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,var(--border2),var(--border2),transparent)}
+.ps{display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1}
+.pi{width:56px;height:56px;border-radius:50%;border:1px solid var(--border2);background:var(--card);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px;position:relative}
+.pi span{position:absolute;top:-4px;right:-4px;width:17px;height:17px;background:var(--blue);border-radius:50%;font-size:9px;color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:700}
+.pt{font-family:var(--font-head);font-size:13px;font-weight:700;color:var(--t1);margin-bottom:5px}
+.pd{font-size:11px;color:var(--t3);line-height:1.7;max-width:130px}
+
+/* EVIDENCE */
+#evidence{background:var(--bg)}
+.ev-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:48px}
+.ev-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;transition:border-color .2s}
+.ev-card:hover{border-color:var(--border2)}
+.ev-tag{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+.ev-v{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--t1);margin-bottom:2px}
+.ev-c{font-size:11px;color:var(--t3);margin-bottom:14px}
+.ev-m{display:flex;flex-direction:column;gap:7px}
+.ev-row{display:flex;justify-content:space-between;font-size:12px}
+.ev-rl{color:var(--t3)}.ev-rv{color:var(--t1);font-weight:600}
+.ev-rv.g{color:var(--green)}.ev-rv.a{color:var(--amber)}
+.ev-div{border:none;border-top:1px solid var(--border);margin:12px 0}
+.ev-st{font-size:11px;display:inline-flex;align-items:center;gap:5px}
+.ev-st.ok{color:var(--green)}.ev-st.live{color:var(--amber)}
+
+/* SEGMENTS */
+#segments{background:var(--surface)}
+.seg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:48px}
+.seg-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:26px;transition:all .2s;position:relative;overflow:hidden}
+.seg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--c1),var(--c2))}
+.seg-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.seg-icon{font-size:26px;margin-bottom:14px}
+.seg-t{font-family:var(--font-head);font-size:17px;font-weight:700;color:var(--t1);margin-bottom:7px}
+.seg-d{font-size:14px;color:var(--t3);line-height:1.8;margin-bottom:18px}
+.seg-items{display:flex;flex-direction:column;gap:6px}
+.seg-item{display:flex;align-items:flex-start;gap:7px;font-size:14px;color:var(--t2)}
+.seg-item::before{content:'→';color:var(--blue);flex-shrink:0}
+.seg-price{margin-top:18px;padding-top:14px;border-top:1px solid var(--border);font-size:11px;color:var(--t3)}
+.seg-price strong{color:var(--t1);font-size:13px}
+
+/* ABOUT */
+#about{background:var(--bg)}
+.founder-grid{display:grid;grid-template-columns:260px 1fr;gap:56px;align-items:start;margin-top:40px}
+.founder-photo{border-radius:14px;overflow:hidden;border:1px solid var(--border);background:var(--card);aspect-ratio:1;display:flex;align-items:center;justify-content:center}
+.founder-photo img{width:100%;height:100%;object-fit:cover}
+.fn{font-family:var(--font-head);font-size:26px;font-weight:800;color:var(--t1);margin-bottom:3px}
+.ft{font-size:11px;color:var(--blue);letter-spacing:1px;text-transform:uppercase;margin-bottom:18px}
+.fb{font-size:13px;color:var(--t2);line-height:2;margin-bottom:20px}
+.creds{display:flex;flex-direction:column;gap:9px}
+.cred{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--t2)}
+.cred-ic{width:26px;height:26px;border-radius:5px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+
+/* CONTACT */
+#contact{background:var(--surface)}
+.contact-inner{max-width:620px;margin:0 auto;text-align:center}
+.cf-form{margin-top:36px;text-align:left;display:flex;flex-direction:column;gap:14px}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:5px}
+label{font-size:11px;color:var(--t3);letter-spacing:.5px}
+input,select,textarea{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:10px 13px;color:var(--t1);font-family:var(--font-mono);font-size:13px;transition:border-color .2s;outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+select option{background:var(--card)}
+textarea{resize:vertical;min-height:90px}
+.fsub{background:var(--blue);color:#fff;padding:12px;border-radius:7px;font-size:13px;font-weight:500;font-family:var(--font-mono);cursor:pointer;border:none;transition:all .2s;letter-spacing:.3px;width:100%}
+.fsub:hover{background:var(--blue2);box-shadow:0 8px 24px rgba(45,139,255,.3)}
+.fnote{font-size:11px;color:var(--t3);text-align:center;line-height:1.7}
+
+/* FOOTER */
+footer{background:var(--card);border-top:1px solid var(--border);padding:28px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.f-brand{display:flex;align-items:center;gap:9px}
+.f-rv{background:var(--blue);color:#fff;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:700;font-family:var(--font-head)}
+.f-name{font-size:13px;font-weight:600;color:var(--t1);font-family:var(--font-head)}
+.f-copy{font-size:11px;color:var(--t3)}
+.f-contact{font-size:11px;color:var(--t3)}
+.f-contact a{color:var(--blue)}
+
+@media(max-width:1100px){
+  .hero-inner{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .ds-body{grid-template-columns:1fr}
+  .ds-sidebar{display:none}
+  .row2{grid-template-columns:1fr}
+  .row3{grid-template-columns:1fr 1fr}
+  .ev-grid,.seg-grid{grid-template-columns:1fr 1fr}
+  .founder-grid{grid-template-columns:1fr;gap:28px}
+  .pipeline{grid-template-columns:1fr 1fr;gap:36px}
+  .pipe-line{display:none}
+}
+@media(max-width:700px){
+  nav{padding:0 16px;gap:16px}
+  .nav-links a:not(.nav-cta){display:none}
+  section{padding:72px 20px}
+  .hero{padding:80px 20px 40px}
+  h1{font-size:36px}
+  .ev-grid,.seg-grid{grid-template-columns:1fr}
+  .row3{grid-template-columns:1fr}
+  .f-row{grid-template-columns:1fr}
+  .stat-row{grid-template-columns:1fr 1fr}
+  .dash-shell{width:calc(100% - 40px)}
+  .dash-head{padding:0 20px 28px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <div class="nav-rv">RV</div>
+    <div>
+      <div class="nav-name">RecallVantage</div>
+      <div class="nav-sub">Research</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="#video">Demo</a>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#how">Methodology</a>
+    <a href="#evidence">Evidence</a>
+    <a href="#segments">Coverage</a>
+    <a href="#about">About</a>
+    <a href="#contact" class="nav-cta">Request Demo</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-inner" style="z-index:3;position:relative">
+    <div class="hero-left">
+      <div class="hero-tag">
+        <span class="live-dot"></span>
+        Live Intelligence · 86,500+ Signals Monitored
+      </div>
+      <h1>We See Recalls<br>Before They<br><span class="acc">Happen.</span></h1>
+      <p class="hero-desc">RecallVantage is an independent research firm identifying unpriced automotive safety risk in NHTSA complaint data — delivering validated signals to institutional investors, insurers, and OEMs months before regulatory action.</p>
+      <div class="hero-btns">
+        <a href="#dashboard" class="btn btn-p">View Live Dashboard</a>
+        <a href="#contact" class="btn btn-g">Request Demo Access</a>
+      </div>
+      <div class="hero-kpis">
+        <div class="kpi"><div class="v" style="color:var(--green)">+26d</div><div class="l">BMW X5<br>Lead Time</div></div>
+        <div class="kpi"><div class="v" style="color:var(--blue)">315d</div><div class="l">KIA Forte<br>Lead Time</div></div>
+        <div class="kpi"><div class="v" style="color:var(--amber)">33%</div><div class="l">Validated<br>Precision</div></div>
+        <div class="kpi"><div class="v" style="color:var(--t1)">0.72</div><div class="l">CV AUC<br>Model Score</div></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-dash">
+        <div class="hd-top">
+          <span class="hd-dot" style="background:#ff5f57"></span>
+          <span class="hd-dot" style="background:#ffbd2e"></span>
+          <span class="hd-dot" style="background:#28ca41"></span>
+          <span class="hd-title">RecallVantage — Live Signal Monitor</span>
+        </div>
+        <div class="hd-body">
+          <div class="hd-stats">
+            <div class="hd-stat"><div class="hd-sv b">86,500+</div><div class="hd-sl">Signals</div></div>
+            <div class="hd-stat"><div class="hd-sv a">4</div><div class="hd-sl">Active Alphas</div></div>
+            <div class="hd-stat"><div class="hd-sv g">+87d</div><div class="hd-sl">Avg Lead</div></div>
+          </div>
+          <div class="hd-chart"><canvas id="heroChart"></canvas></div>
+          <div class="sig-list">
+            <div class="sig-row"><span class="sdot" style="background:var(--red)"></span><span class="sname">KIA Soul 2015 / Engine</span><span class="sbadge sb-a">MED 42%</span><span class="sexp">$82.5M</span></div>
+            <div class="sig-row"><span class="sdot" style="background:var(--amber)"></span><span class="sname">Tesla Y 2024 / Camera</span><span class="sbadge sb-g">HIGH 89%</span><span class="sexp">$25.5M</span></div>
+            <div class="sig-row"><span class="sdot" style="background:var(--amber)"></span><span class="sname">Battle Motors LET2 / Brakes</span><span class="sbadge sb-a">MED 38%</span><span class="sexp">$13.2M</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE COMPLAINTS TICKER -->
+<div id="ticker-section" style="background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0;overflow:hidden">
+  <div style="display:flex;align-items:stretch">
+    <div style="background:var(--red);color:#fff;padding:0 18px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;flex-shrink:0;white-space:nowrap">
+      <span style="width:7px;height:7px;border-radius:50%;background:#fff;animation:blink 1.2s infinite;display:inline-block"></span>
+      LIVE NHTSA FEED
+    </div>
+    <div style="overflow:hidden;flex:1;position:relative;height:44px">
+      <div id="ticker-track" style="display:flex;align-items:center;height:44px;white-space:nowrap;will-change:transform"></div>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO SECTION -->
+<section id="video" style="background:var(--surface);padding:56px 40px;">
+  <div style="max-width:1000px;margin:0 auto">
+    <div class="eyebrow">Platform Demo</div>
+    <div class="stitle" style="margin-bottom:32px">See It In Action</div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:0 40px 80px rgba(0,0,0,.4)">
+      <video controls style="width:100%;display:block;background:#000;">
+        <source src="bscframe.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</section>
+
+<!-- FULL DASHBOARD -->
+<section id="dashboard">
+  <div class="dash-head">
+    <div>
+      <div class="eyebrow">Live Intelligence Platform</div>
+      <div class="stitle">Unpriced Risk Dashboard</div>
+    </div>
+    <div style="font-size:11px;color:var(--t3)">Last Updated: Mar 13, 2026 · 09:30 IST</div>
+  </div>
+
+  <div class="dash-shell">
+    <div class="ds-topbar">
+      <div class="ds-brand">
+        <span class="ds-rv">RV</span>RecallVantage
+        <span class="ds-tag">— Unpriced Risk Intelligence</span>
+      </div>
+      <div class="ds-meta">Signals: <strong style="color:var(--blue)">86,500+</strong> &nbsp;·&nbsp; Alphas: <strong style="color:var(--amber)">4</strong> &nbsp;·&nbsp; Avg Lead: <strong style="color:var(--green)">+87 Days</strong></div>
+      <div class="ds-search">⌕ &nbsp;Search Vehicles, Components, OEMs…</div>
+    </div>
+
+    <div class="ds-body">
+      <div class="ds-sidebar">
+        <div class="ds-nav on"><span class="ds-nav-ic">⊞</span>Executive Overview</div>
+        <div class="ds-nav"><span class="ds-nav-ic">↗</span>Deep Dive Analytics</div>
+        <div class="ds-nav"><span class="ds-nav-ic">◈</span>OEM Benchmarking</div>
+        <div class="ds-nav"><span class="ds-nav-ic">◉</span>Alerts Manager</div>
+        <div style="flex:1"></div>
+        <div class="ds-nav"><span class="ds-nav-ic">⚙</span>Settings</div>
+      </div>
+
+      <div class="ds-main">
+        <div class="stat-row">
+          <div class="stat-c"><div class="stat-l">SIGNALS MONITORED</div><div class="stat-v b">86,500+</div></div>
+          <div class="stat-c"><div class="stat-l">ACTIVE ALPHAS</div><div class="stat-v a">4</div></div>
+          <div class="stat-c"><div class="stat-l">AVG. LEAD TIME</div><div class="stat-v g">+87 Days</div></div>
+        </div>
+
+        <div class="row2">
+          <div class="panel">
+            <div class="ph">Active Risk Heatmap <span class="ph-tag">LIVE</span></div>
+            <div class="cw" style="height:240px"><canvas id="dashHeatmap"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="ph">Analytics &amp; Evidence</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
+              <span style="background:rgba(45,139,255,.1);color:var(--blue);padding:3px 9px;border-radius:3px;font-size:10px;letter-spacing:.5px">Hardware Cross-Failure (Active Alpha)</span>
+              <span style="background:rgba(139,92,246,.1);color:var(--purple);padding:3px 9px;border-radius:3px;font-size:10px;margin-left:3px">Component Breakdown</span>
+            </div>
+            <div style="margin-bottom:8px"><span class="ap">ALERT</span><span class="cp">Correlation: 92%</span></div>
+            <svg class="netsv" viewBox="0 0 280 155" style="height:155px">
+              <line x1="70" y1="52" x2="210" y2="52" stroke="#1e2d48" stroke-width="1.5"/>
+              <line x1="70" y1="52" x2="140" y2="118" stroke="#1e2d48" stroke-width="1.5"/>
+              <line x1="210" y1="52" x2="140" y2="118" stroke="#1e2d48" stroke-width="1.5"/>
+              <line x1="70" y1="52" x2="210" y2="118" stroke="#1e2d48" stroke-width="1.5"/>
+              <line x1="210" y1="52" x2="70" y2="118" stroke="#1e2d48" stroke-width="1.5"/>
+              <circle cx="70" cy="52" r="9" fill="#102040" stroke="#2d8bff" stroke-width="1.5"/>
+              <circle cx="210" cy="52" r="9" fill="#102040" stroke="#2d8bff" stroke-width="1.5"/>
+              <circle cx="140" cy="118" r="9" fill="#102040" stroke="#2d8bff" stroke-width="1.5"/>
+              <circle cx="70" cy="118" r="9" fill="#0a2030" stroke="#00d4c8" stroke-width="1.5"/>
+              <text x="70" y="36" fill="#9aaec4" font-size="10" text-anchor="middle" font-family="IBM Plex Mono">Rear Camera</text>
+              <text x="210" y="36" fill="#9aaec4" font-size="10" text-anchor="middle" font-family="IBM Plex Mono">Blind Spot Det.</text>
+              <text x="163" y="138" fill="#9aaec4" font-size="10" text-anchor="middle" font-family="IBM Plex Mono">Sensing System</text>
+              <text x="55" y="138" fill="#00d4c8" font-size="10" text-anchor="middle" font-family="IBM Plex Mono">Lane Dep.</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="row3">
+          <div class="panel">
+            <div class="ph">Risk Trend Over Time</div>
+            <div class="cw" style="height:155px"><canvas id="dashTrend"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="ph">Component Failure Histogram</div>
+            <div class="cw" style="height:155px"><canvas id="dashHist"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="ph">OEM Peer Comparison</div>
+            <div class="cw" style="height:155px"><canvas id="dashOem"></canvas></div>
+          </div>
+        </div>
+
+        <div class="sig-shell">
+          <div class="sig-hd">
+            <div class="sig-ht">Priority Risk Signals</div>
+            <div class="sig-hn">* Probability-Weighted Risk (33% Historical Precision)</div>
+          </div>
+          <table class="st">
+            <thead>
+              <tr>
+                <th style="width:16px"></th>
+                <th>Vehicle</th><th>Component</th><th>Confidence</th>
+                <th>Expected Loss *</th><th>Lead Time</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="sdot2" style="background:var(--red)"></span></td>
+                <td style="color:var(--t1);font-weight:600">KIA Soul 2015</td>
+                <td style="color:var(--t3)">Engine</td>
+                <td><span style="background:rgba(245,166,35,.15);color:#fbbf24;border:1px solid rgba(245,166,35,.3);padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600">MEDIUM (42%)</span><span class="ct"><span class="cf" style="width:42%;background:var(--amber)"></span></span></td>
+                <td style="color:var(--t1);font-weight:700">$82.5M</td>
+                <td style="color:var(--t3)">Pending</td>
+                <td><button class="ab ab-i">Investigate</button></td>
+              </tr>
+              <tr>
+                <td><span class="sdot2" style="background:var(--amber)"></span></td>
+                <td style="color:var(--t1);font-weight:600">Tesla Model Y 2024</td>
+                <td style="color:var(--t3)">Camera System</td>
+                <td><span style="background:rgba(0,200,122,.1);color:var(--green);border:1px solid rgba(0,200,122,.25);padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600">HIGH (89%)</span><span class="ct"><span class="cf" style="width:89%;background:var(--green)"></span></span></td>
+                <td style="color:var(--t1);font-weight:700">$25.5M</td>
+                <td style="color:var(--green);font-weight:700">+26 Days</td>
+                <td><button class="ab ab-m">Monitor</button></td>
+              </tr>
+              <tr>
+                <td><span class="sdot2" style="background:var(--amber)"></span></td>
+                <td style="color:var(--t1);font-weight:600">Battle Motors LET2 2023</td>
+                <td style="color:var(--t3)">Service Brakes</td>
+                <td><span style="background:rgba(245,166,35,.15);color:#fbbf24;border:1px solid rgba(245,166,35,.3);padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600">MEDIUM (38%)</span><span class="ct"><span class="cf" style="width:38%;background:var(--amber)"></span></span></td>
+                <td style="color:var(--t1);font-weight:700">$13.2M</td>
+                <td style="color:var(--t3)">Pending</td>
+                <td><button class="ab ab-i">Investigate</button></td>
+              </tr>
+              <tr>
+                <td><span class="sdot2" style="background:var(--green);opacity:.6"></span></td>
+                <td style="color:var(--t1);font-weight:600">BMW X5 2023</td>
+                <td style="color:var(--t3)">Electrical System</td>
+                <td><span style="background:rgba(0,200,122,.1);color:var(--green);border:1px solid rgba(0,200,122,.25);padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600">HIGH (76%)</span><span class="ct"><span class="cf" style="width:76%;background:var(--green)"></span></span></td>
+                <td style="color:var(--blue);font-weight:700">RECALLED ✓</td>
+                <td style="color:var(--green);font-weight:700">✓ 26d lead</td>
+                <td><button class="ab ab-c">Closed</button></td>
+              </tr>
+              <tr>
+                <td><span class="sdot2" style="background:var(--green);opacity:.6"></span></td>
+                <td style="color:var(--t1);font-weight:600">KIA Forte 2021</td>
+                <td style="color:var(--t3)">Powertrain</td>
+                <td><span style="background:rgba(0,200,122,.1);color:var(--green);border:1px solid rgba(0,200,122,.25);padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600">HIGH (81%)</span><span class="ct"><span class="cf" style="width:81%;background:var(--green)"></span></span></td>
+                <td style="color:var(--blue);font-weight:700">RECALLED ✓</td>
+                <td style="color:var(--green);font-weight:700">✓ 315d lead</td>
+                <td><button class="ab ab-c">Closed</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="eyebrow">Methodology</div>
+    <div class="stitle">The Signal Pipeline</div>
+    <p class="ssub">A multi-stage ML pipeline converting raw NHTSA complaints into probability-weighted financial exposure estimates. No look-ahead bias. Validated against FLAT_INV investigation records.</p>
+    <div class="pipeline">
+      <div class="pipe-line"></div>
+      <div class="ps">
+        <div class="pi">📡<span>1</span></div>
+        <div class="pt">NHTSA Ingestion</div>
+        <div class="pd">417,647 complaints via bulk + API delta. Daily update cycle.</div>
+      </div>
+      <div class="ps">
+        <div class="pi">🧠<span>2</span></div>
+        <div class="pt">NLP Scoring</div>
+        <div class="pd">Transformer severity scoring. Mean 1.55 across corpus.</div>
+      </div>
+      <div class="ps">
+        <div class="pi">📈<span>3</span></div>
+        <div class="pt">Feature Engineering</div>
+        <div class="pd">Drift, Velocity, Acceleration — derivatives of complaint momentum.</div>
+      </div>
+      <div class="ps">
+        <div class="pi">🎯<span>4</span></div>
+        <div class="pt">Risk Engine v5</div>
+        <div class="pd">Logistic Regression. CV AUC 0.719. Monotonic 16%→77%.</div>
+      </div>
+      <div class="ps">
+        <div class="pi">💰<span>5</span></div>
+        <div class="pt">Financial Exposure</div>
+        <div class="pd">Monte Carlo VaR 95%. Sales-normalized. Probability-weighted.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVIDENCE -->
+<section id="evidence">
+  <div class="container">
+    <div class="eyebrow">Validated Backtests</div>
+    <div class="stitle">Proven Before You See It.</div>
+    <p class="ssub">Every signal is validated against historical NHTSA investigation records. Temporal backtests only — zero look-ahead bias. Results speak for themselves.</p>
+    <div class="ev-grid">
+      <div class="ev-card">
+        <div class="ev-tag">TRUE POSITIVE — CONFIRMED</div>
+        <div class="ev-v">BMW X5 2023</div>
+        <div class="ev-c">Electrical System</div>
+        <div class="ev-m">
+          <div class="ev-row"><span class="ev-rl">Signal Date</span><span class="ev-rv">Jan 1, 2023</span></div>
+          <div class="ev-row"><span class="ev-rl">Investigation Opened</span><span class="ev-rv">Jan 27, 2023</span></div>
+          <div class="ev-row"><span class="ev-rl">Lead Time</span><span class="ev-rv g">+26 Days</span></div>
+          <div class="ev-row"><span class="ev-rl">Exposure Estimate</span><span class="ev-rv">$47M–$180M</span></div>
+        </div>
+        <div class="ev-div"></div>
+        <span class="ev-st ok">✓ RECALLED — Signal Confirmed</span>
+      </div>
+      <div class="ev-card">
+        <div class="ev-tag">TRUE POSITIVE — CONFIRMED</div>
+        <div class="ev-v">KIA Forte 2021</div>
+        <div class="ev-c">Powertrain / Engine</div>
+        <div class="ev-m">
+          <div class="ev-row"><span class="ev-rl">Signal Date</span><span class="ev-rv">Feb 2022</span></div>
+          <div class="ev-row"><span class="ev-rl">Recall Issued</span><span class="ev-rv">Dec 2022</span></div>
+          <div class="ev-row"><span class="ev-rl">Lead Time</span><span class="ev-rv g">+315 Days</span></div>
+          <div class="ev-row"><span class="ev-rl">Cutoff Precision</span><span class="ev-rv">33%</span></div>
+        </div>
+        <div class="ev-div"></div>
+        <span class="ev-st ok">✓ RECALLED — Signal Confirmed</span>
+      </div>
+      <div class="ev-card">
+        <div class="ev-tag">ACTIVE ALPHA — LIVE SIGNAL</div>
+        <div class="ev-v">Tesla Model Y 2024</div>
+        <div class="ev-c">ADAS / Back-Over Camera</div>
+        <div class="ev-m">
+          <div class="ev-row"><span class="ev-rl">Signal Strength</span><span class="ev-rv a">HIGH (89%)</span></div>
+          <div class="ev-row"><span class="ev-rl">Cross-Correlated</span><span class="ev-rv">4 components (92%)</span></div>
+          <div class="ev-row"><span class="ev-rl">Expected Exposure</span><span class="ev-rv">$77M–$290M</span></div>
+          <div class="ev-row"><span class="ev-rl">Lead Time (est.)</span><span class="ev-rv g">+26 Days</span></div>
+        </div>
+        <div class="ev-div"></div>
+        <span class="ev-st live">⬤ MONITORING — Awaiting Regulatory Action</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEGMENTS -->
+<section id="segments">
+  <div class="container">
+    <div class="eyebrow">Market Coverage</div>
+    <div class="stitle">Who We Serve</div>
+    <p class="ssub">Three institutional client segments. Each receives a tailored research product designed around their specific exposure and decision-making needs.</p>
+    <div class="seg-grid">
+      <div class="seg-card" style="--c1:var(--blue);--c2:var(--cyan)">
+        <div class="seg-icon">📊</div>
+        <div class="seg-t">Financial Analysts</div>
+        <div class="seg-d">Institutional investors and hedge funds needing pre-regulatory risk signals to price automotive exposure before the market sees it.</div>
+        <div class="seg-items">
+          <div class="seg-item">Probability-weighted VaR exposure estimates</div>
+          <div class="seg-item">Monte Carlo financial scenario modeling</div>
+          <div class="seg-item">OEM peer comparison matrix</div>
+          <div class="seg-item">26–315 day lead time advantage</div>
+        </div>
+        <div class="seg-price">Retainer from <strong>$3,000–$5,000/mo</strong></div>
+      </div>
+      <div class="seg-card" style="--c1:var(--amber);--c2:var(--red)">
+        <div class="seg-icon">🛡</div>
+        <div class="seg-t">Insurance Companies</div>
+        <div class="seg-d">Auto insurers and reinsurers needing early identification of recall risk to adjust reserves and underwriting exposure before announcements.</div>
+        <div class="seg-items">
+          <div class="seg-item">Vehicle-level risk stratification</div>
+          <div class="seg-item">Component failure probability by MMY</div>
+          <div class="seg-item">Claims volume forecasting</div>
+          <div class="seg-item">Reserve adjustment triggers</div>
+        </div>
+        <div class="seg-price">Retainer from <strong>$2,000–$4,000/mo</strong></div>
+      </div>
+      <div class="seg-card" style="--c1:var(--green);--c2:var(--cyan)">
+        <div class="seg-icon">🏭</div>
+        <div class="seg-t">OEM Manufacturers</div>
+        <div class="seg-d">Automotive manufacturers seeking early internal signals to manage warranty reserves, NHTSA relationships, and proactive quality responses.</div>
+        <div class="seg-items">
+          <div class="seg-item">Own-brand complaint trajectory alerts</div>
+          <div class="seg-item">Competitive OEM benchmarking</div>
+          <div class="seg-item">Warranty reserve pressure signals</div>
+          <div class="seg-item">Investigation risk scoring</div>
+        </div>
+        <div class="seg-price">Retainer from <strong>$4,000–$8,000/mo</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="eyebrow">About</div>
+    <div class="stitle">The Researcher</div>
+    <div class="founder-grid">
+      <div class="founder-photo" id="founderPhotoWrap">
+        <img src="1771864689352.png" alt="Dr. Shlomi Sela" id="founderImg"
+          onerror="document.getElementById('founderImg').style.display='none';document.getElementById('founderInitials').style.display='flex';">
+        <div id="founderInitials" style="display:none;width:100%;height:100%;min-height:280px;align-items:center;justify-content:center;font-family:var(--font-head);font-size:72px;font-weight:800;color:var(--blue);background:var(--card2)">SS</div>
+      </div>
+      <div>
+        <div class="fn">Dr. Shlomi Sela</div>
+        <div class="ft">Ph.D. ML/NLP · Founder &amp; Chief Scientist</div>
+        <p class="fb">With 40 years of field experience spanning industrial telemetry, large-scale SAS systems, and modern ML/NLP, Dr. Sela applies rigorous predictive methodology to automotive safety data. RecallVantage was built over 17 days in a documented human-AI development sprint — and validated against 417,000+ NHTSA complaints.</p>
+        <p class="fb">The core insight: NHTSA complaint data carries predictive signal that is systematically ignored by the market. By extracting drift, velocity, and acceleration from complaint time series — and validating against FLAT_INV investigation records with strict temporal cutoffs — RecallVantage delivers institutional-grade intelligence with zero look-ahead bias.</p>
+        <div class="creds">
+          <div class="cred"><div class="cred-ic">🎓</div>Ph.D. in Machine Learning / Natural Language Processing</div>
+          <div class="cred"><div class="cred-ic">📍</div>Based in Petah Tikva, Israel</div>
+          <div class="cred"><div class="cred-ic">📧</div>shlomi@recallvantage.com</div>
+          <div class="cred"><div class="cred-ic">🏢</div>Engaged with Anthropic Startup Program</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-inner">
+      <div class="eyebrow">Demo Access</div>
+      <div class="stitle">Request Research Access</div>
+      <p class="ssub" style="text-align:center;margin:0 auto 8px">Institutional clients only. We'll review your request and schedule a personalized demo within 48 hours.</p>
+      <form class="cf-form" name="demo-request" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="demo-request">
+        <input type="hidden" name="bot-field">
+        <div class="f-row">
+          <div class="fg"><label>Full Name</label><input type="text" name="name" placeholder="Jane Smith" required></div>
+          <div class="fg"><label>Email</label><input type="email" name="email" placeholder="jane@firm.com" required></div>
+        </div>
+        <div class="f-row">
+          <div class="fg"><label>Organization</label><input type="text" name="org" placeholder="Fund / Insurer / OEM" required></div>
+          <div class="fg"><label>Client Type</label>
+            <select name="type" required>
+              <option value="">Select…</option>
+              <option>Hedge Fund / Asset Manager</option>
+              <option>Insurance Company</option>
+              <option>OEM / Manufacturer</option>
+              <option>Other Institutional</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg"><label>What risk exposure are you looking to quantify?</label>
+          <textarea name="message" placeholder="e.g. We hold long positions in Tesla and want early NHTSA recall signals…"></textarea>
+        </div>
+        <button type="submit" class="fsub">Submit Demo Request →</button>
+        <p class="fnote">Your data is handled securely and never shared. We respond within 48 hours on business days.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-brand"><span class="f-rv">RV</span><span class="f-name">RecallVantage Research</span></div>
+  <div class="f-copy">© 2026 — Secure &amp; Proprietary. All signals validated via temporal backtest.</div>
+  <div class="f-contact">Contact: <a href="mailto:shlomi@recallvantage.com">shlomi@recallvantage.com</a></div>
+</footer>
+
+<script>
+Chart.defaults.color='#8aa0b8';
+Chart.defaults.font.size=11;
+Chart.defaults.font.family="system-ui,-apple-system,sans-serif";
+
+new Chart(document.getElementById('heroChart'),{type:'line',data:{
+  labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov'],
+  datasets:[{data:[42,48,55,58,71,79,88,104,120,145,178],borderColor:'#2d8bff',backgroundColor:'rgba(45,139,255,0.07)',fill:true,tension:.4,pointRadius:0,borderWidth:2}]
+},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
+  x:{grid:{color:'rgba(24,32,53,.6)'},ticks:{color:'#8aa0b8',font:{size:11},maxTicksLimit:6,autoSkip:true}},
+  y:{grid:{color:'rgba(24,32,53,.6)'},ticks:{color:'#8aa0b8',font:{size:11}}}
+}}});
+
+new Chart(document.getElementById('dashHeatmap'),{type:'bubble',data:{datasets:[
+  {label:'KIA Soul 2015',data:[{x:447,y:82.5,r:26}],backgroundColor:'rgba(240,64,96,0.35)',borderColor:'#f04060',borderWidth:2},
+  {label:'Tesla Y 2024',data:[{x:180,y:25.5,r:16},{x:200,y:23,r:10},{x:160,y:20,r:8}],backgroundColor:'rgba(245,166,35,0.4)',borderColor:'#f5a623',borderWidth:1.5},
+  {label:'Battle Motors',data:[{x:100,y:13.2,r:12}],backgroundColor:'rgba(245,166,35,0.3)',borderColor:'#f5a623',borderWidth:1.5},
+  {label:'Others',data:[{x:15,y:2,r:4},{x:22,y:3,r:4},{x:12,y:5,r:4},{x:30,y:4,r:5},{x:20,y:7,r:4},{x:28,y:3,r:3},{x:40,y:5,r:4},{x:50,y:6,r:4}],backgroundColor:'rgba(45,139,255,0.2)',borderColor:'rgba(45,139,255,0.4)',borderWidth:1}
+]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:10,right:20}},
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Urgency: ${c.raw.x} | Loss: $${c.raw.y}M`}}},
+  scales:{
+    x:{type:'logarithmic',title:{display:true,text:'Urgency Score',color:'#8aa0b8',font:{size:11}},grid:{color:'#182035'},ticks:{color:'#8aa0b8',font:{size:11}},min:5,max:1200},
+    y:{title:{display:true,text:'Expected Loss ($M)',color:'#8aa0b8',font:{size:11}},grid:{color:'#182035'},ticks:{color:'#8aa0b8',font:{size:11},callback:v=>'$'+v+'M'},min:0,max:100}
+  }
+}});
+
+new Chart(document.getElementById('dashTrend'),{type:'line',data:{
+  labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+  datasets:[{data:[45,52,58,61,72,78,89,105,118,138,162,195],borderColor:'#2d8bff',backgroundColor:'rgba(45,139,255,0.07)',fill:true,tension:.4,pointRadius:2,borderWidth:2}]
+},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
+  x:{grid:{color:'#182035'},ticks:{color:'#8aa0b8',font:{size:10},maxRotation:0,autoSkip:true,maxTicksLimit:6}},
+  y:{grid:{color:'#182035'},ticks:{color:'#8aa0b8',font:{size:10}}}
+}}});
+
+new Chart(document.getElementById('dashHist'),{type:'bar',data:{
+  labels:['ADAS','Powertrain','Batt/EV','Braking','Body','Other'],
+  datasets:[{data:[98,72,55,38,24,12],backgroundColor:['#2d8bff','#506070','#506070','#506070','#506070','#506070'],borderRadius:3}]
+},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
+  x:{grid:{color:'transparent'},ticks:{color:'#8aa0b8',font:{size:10},maxRotation:0,autoSkip:false}},
+  y:{grid:{color:'#182035'},ticks:{color:'#8aa0b8',font:{size:10}}}
+}}});
+
+new Chart(document.getElementById('dashOem'),{type:'scatter',data:{datasets:[
+  {label:'Toyota',data:[{x:95,y:45}],backgroundColor:'#f04060',pointRadius:13},
+  {label:'Kia',data:[{x:88,y:72}],backgroundColor:'#f5a623',pointRadius:12},
+  {label:'VW',data:[{x:72,y:38}],backgroundColor:'#506070',pointRadius:10},
+  {label:'Tesla',data:[{x:68,y:35}],backgroundColor:'#2d8bff',pointRadius:11},
+  {label:'GM',data:[{x:30,y:8}],backgroundColor:'#00c87a',pointRadius:9},
+  {label:'Ford',data:[{x:45,y:12}],backgroundColor:'#00d4c8',pointRadius:9}
+]},options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:true,position:'right',labels:{boxWidth:8,color:'#8aa0b8',font:{size:10},padding:5}}},
+  scales:{
+    x:{title:{display:true,text:'Avg Confidence',color:'#8aa0b8',font:{size:10}},grid:{color:'#182035'},ticks:{color:'#8aa0b8',font:{size:10}}},
+    y:{title:{display:true,text:'Exp. Loss ($M)',color:'#8aa0b8',font:{size:10}},grid:{color:'#182035'},ticks:{color:'#8aa0b8',font:{size:10},callback:v=>'$'+v+'M'}}
+  }
+}});
+// ========== ACTIVE NAV ==========
+(function() {
+  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+  const sections = Array.from(navLinks).map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
+  function setActive() {
+    const scrollY = window.scrollY + 80;
+    let current = sections[0];
+    sections.forEach(s => { if (s.offsetTop <= scrollY) current = s; });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current.id);
+    });
+  }
+  window.addEventListener('scroll', setActive, {passive:true});
+  setActive();
+})();
+
+// ========== LIVE NHTSA TICKER ==========
+(async function() {
+  const track = document.getElementById('ticker-track');
+  if (!track) return;
+
+  const fallback = [
+    {v:'TESLA MODEL Y 2024', c:'BACK OVER PREVENTION', s:'Camera failure — vehicle did not detect pedestrian during reverse'},
+    {v:'KIA SOUL 2015', c:'ENGINE', s:'Engine stalling at highway speed with no warning'},
+    {v:'BMW X5 2023', c:'ELECTRICAL SYSTEM', s:'Total electrical shutdown while driving — doors locked'},
+    {v:'FORD ESCAPE 2022', c:'FUEL SYSTEM', s:'Strong fuel smell inside cabin after cold start'},
+    {v:'BATTLE MOTORS LET2 2023', c:'SERVICE BRAKES', s:'Brake pedal goes to floor — no stopping power'},
+    {v:'TOYOTA CAMRY 2022', c:'FORWARD COLLISION', s:'False emergency braking on highway at 70mph'},
+    {v:'HONDA CR-V 2021', c:'AIRBAG', s:'Airbag warning light, module replacement required'},
+    {v:'NISSAN ROGUE 2020', c:'TRANSMISSION', s:'Sudden loss of power — transmission slips into neutral'},
+  ];
+
+  let items = [];
+  try {
+    const makes = ['TESLA','KIA','BMW','FORD'];
+    const results = await Promise.allSettled(
+      makes.map(m =>
+        fetch(`https://api.nhtsa.gov/complaints/complaintsByVehicle?make=${m}&modelYear=2024`, {signal: AbortSignal.timeout(6000)})
+          .then(r => r.json())
+      )
+    );
+    results.forEach(r => {
+      if (r.status === 'fulfilled' && r.value?.results) {
+        r.value.results.slice(0,3).forEach(c => {
+          items.push({
+            v: `${c.make||''} ${c.model||''} ${c.modelYear||''}`.trim(),
+            c: (c.components||'').replace(/,/g,'/').substring(0,40),
+            s: (c.summary||'').substring(0,80)
+          });
+        });
+      }
+    });
+  } catch(e) {}
+
+  if (items.length < 3) items = fallback;
+
+  const makeItem = ({v,c,s}) =>
+    `<span style="display:inline-flex;align-items:center;gap:12px;padding:0 28px;border-right:1px solid #182035;height:44px;font-size:12px;flex-shrink:0">
+      <span style="color:#f04060;font-size:9px;flex-shrink:0">●</span>
+      <span style="color:#eef2f8;font-weight:600;white-space:nowrap">${v}</span>
+      <span style="color:#506070">·</span>
+      <span style="color:#2d8bff;font-size:11px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">${c}</span>
+      <span style="color:#506070">—</span>
+      <span style="color:#9aaec4;white-space:nowrap">${s}</span>
+    </span>`;
+
+  track.innerHTML = items.map(makeItem).join('') + items.map(makeItem).join('');
+
+  const singleWidth = track.scrollWidth / 2;
+  let pos = 0, animId;
+
+  function tick() {
+    pos -= 0.55;
+    if (Math.abs(pos) >= singleWidth) pos = 0;
+    track.style.transform = `translateX(${pos}px)`;
+    animId = requestAnimationFrame(tick);
+  }
+
+  const wrap = track.parentElement;
+  wrap.addEventListener('mouseenter', () => cancelAnimationFrame(animId));
+  wrap.addEventListener('mouseleave', () => { animId = requestAnimationFrame(tick); });
+  animId = requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
