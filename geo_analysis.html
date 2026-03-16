@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RecallVantage — Geographic Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Outfit:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050507;
+    --surface: #0c0c10;
+    --surface-2: #121217;
+    --border: rgba(255,255,255,0.06);
+    --border-hover: rgba(255,255,255,0.12);
+    --text: #e8e8ec;
+    --text-2: #9898a4;
+    --text-3: #7a7a8a;
+    --accent: #2563eb;
+    --accent-dim: rgba(37,99,235,0.08);
+    --warm: #dc6843;
+    --red: #ef4444;
+    --gold: #f59e0b;
+    --green: #10b981;
+    --purple: #a855f7;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family:'Outfit',sans-serif;
+    background:var(--bg); color:var(--text);
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+
+  body::after {
+    content:''; position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px);
+    background-size:80px 80px; pointer-events:none; z-index:0;
+  }
+
+  .container { max-width:1100px; margin:0 auto; padding:0 2rem; position:relative; z-index:1; }
+
+  /* NAV */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    padding:1rem 2rem;
+    display:flex; align-items:center; justify-content:space-between;
+    background:rgba(5,5,7,0.90); backdrop-filter:blur(24px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-logo {
+    font-family:'Outfit',sans-serif; font-weight:600;
+    font-size:1.2rem; color:var(--text); text-decoration:none;
+    display:flex; align-items:center; gap:0.5rem;
+  }
+  .nav-logo span { color:var(--accent); }
+  .nav-tag {
+    font-family:'IBM Plex Mono',monospace; font-size:0.7rem;
+    text-transform:uppercase; letter-spacing:0.15em;
+    color:var(--text-3); padding:0.2rem 0.6rem;
+    border:1px solid var(--border); border-radius:4px;
+  }
+
+  /* HERO */
+  .hero {
+    padding:8rem 0 4rem;
+    border-bottom:1px solid var(--border);
+  }
+  .hero-label {
+    font-family:'IBM Plex Mono',monospace; font-size:0.75rem;
+    text-transform:uppercase; letter-spacing:0.2em;
+    color:var(--accent); margin-bottom:1.5rem;
+    display:flex; align-items:center; gap:0.5rem;
+  }
+  .hero-label::before {
+    content:''; width:24px; height:1px; background:var(--accent);
+  }
+  .hero h1 {
+    font-family:'Newsreader',serif;
+    font-size:clamp(2.4rem,5vw,3.8rem);
+    font-weight:400; line-height:1.1; letter-spacing:-0.02em;
+    margin-bottom:1.5rem;
+  }
+  .hero h1 em { font-style:italic; color:var(--accent); }
+  .hero-sub {
+    color:var(--text-2); font-size:1.1rem; max-width:560px;
+    font-weight:300; line-height:1.7; margin-bottom:2.5rem;
+  }
+
+  /* KEY INSIGHT BOX */
+  .insight-box {
+    background:rgba(37,99,235,0.04);
+    border:1px solid rgba(37,99,235,0.15);
+    border-radius:10px; padding:1.5rem 2rem;
+    display:flex; gap:1.5rem; align-items:flex-start;
+    margin-bottom:3rem;
+  }
+  .insight-icon {
+    font-size:1.5rem; flex-shrink:0; margin-top:0.1rem;
+  }
+  .insight-text h3 {
+    font-size:1rem; font-weight:500; color:var(--accent);
+    margin-bottom:0.4rem; letter-spacing:0.01em;
+  }
+  .insight-text p {
+    color:var(--text-2); font-size:0.9rem; line-height:1.65;
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display:grid; grid-template-columns:repeat(4,1fr);
+    gap:1px; background:var(--border);
+    border:1px solid var(--border); border-radius:10px;
+    overflow:hidden; margin-bottom:4rem;
+  }
+  .stat-cell {
+    background:var(--surface); padding:1.75rem 1.5rem;
+  }
+  .stat-val {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:2rem; font-weight:400; letter-spacing:-0.02em;
+    margin-bottom:0.3rem;
+  }
+  .stat-val.green { color:var(--green); }
+  .stat-val.red { color:var(--red); }
+  .stat-val.gold { color:var(--gold); }
+  .stat-val.blue { color:var(--accent); }
+  .stat-label {
+    font-size:0.75rem; text-transform:uppercase;
+    letter-spacing:0.12em; color:var(--text-3);
+  }
+
+  /* SECTION */
+  section { padding:4rem 0; border-top:1px solid var(--border); }
+  .section-label {
+    font-family:'IBM Plex Mono',monospace; font-size:0.72rem;
+    text-transform:uppercase; letter-spacing:0.18em;
+    color:var(--text-3); margin-bottom:1rem;
+  }
+  .section-title {
+    font-family:'Newsreader',serif;
+    font-size:clamp(1.8rem,3vw,2.6rem);
+    font-weight:400; letter-spacing:-0.02em; margin-bottom:0.75rem;
+  }
+  .section-sub {
+    color:var(--text-2); font-size:0.95rem; max-width:500px;
+    font-weight:300; line-height:1.7; margin-bottom:2.5rem;
+  }
+
+  /* US MAP SVG */
+  .map-section {
+    display:grid; grid-template-columns:1.4fr 1fr;
+    gap:2rem; align-items:start; margin-bottom:2rem;
+  }
+  .map-wrapper {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:1.5rem; position:relative;
+  }
+  .map-title {
+    font-family:'IBM Plex Mono',monospace; font-size:0.7rem;
+    text-transform:uppercase; letter-spacing:0.15em;
+    color:var(--text-3); margin-bottom:1rem;
+    display:flex; align-items:center; gap:0.5rem;
+  }
+  .live-dot {
+    width:6px; height:6px; border-radius:50%;
+    background:var(--green); animation:pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.4; transform:scale(1.4); }
+  }
+
+  /* SVG US Map */
+  .us-map-svg {
+    width:100%; height:auto;
+  }
+
+  /* Climate zone cards */
+  .zones-stack { display:flex; flex-direction:column; gap:0.75rem; }
+  .zone-card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:8px; padding:1rem 1.25rem;
+    display:flex; align-items:center; gap:1rem;
+    transition:border-color 0.2s;
+    cursor:default;
+  }
+  .zone-card:hover { border-color:var(--border-hover); }
+  .zone-icon { font-size:1.2rem; flex-shrink:0; }
+  .zone-info { flex:1; }
+  .zone-name {
+    font-size:0.85rem; font-weight:500; margin-bottom:0.15rem;
+  }
+  .zone-states {
+    font-size:0.72rem; color:var(--text-3);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .zone-right { text-align:right; flex-shrink:0; }
+  .zone-pct {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:1.1rem; font-weight:400;
+  }
+  .zone-stress {
+    font-size:0.7rem; color:var(--text-3);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .pct-hot { color:var(--red); }
+  .pct-cold { color:var(--accent); }
+  .pct-mid { color:var(--green); }
+
+  /* CLASSIFICATION PANEL */
+  .class-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:1.5rem; margin-bottom:3rem;
+  }
+  .class-card {
+    border-radius:10px; padding:1.75rem;
+    border:1px solid;
+  }
+  .class-card.environmental {
+    background:rgba(245,158,11,0.04);
+    border-color:rgba(245,158,11,0.2);
+  }
+  .class-card.manufacturing {
+    background:rgba(239,68,68,0.04);
+    border-color:rgba(239,68,68,0.2);
+  }
+  .class-header {
+    display:flex; align-items:center; gap:0.75rem;
+    margin-bottom:1rem;
+  }
+  .class-badge {
+    font-family:'IBM Plex Mono',monospace; font-size:0.65rem;
+    text-transform:uppercase; letter-spacing:0.15em;
+    padding:0.2rem 0.6rem; border-radius:3px;
+  }
+  .badge-env { background:rgba(245,158,11,0.12); color:var(--gold); }
+  .badge-mfg { background:rgba(239,68,68,0.12); color:var(--red); }
+  .class-card h3 {
+    font-size:1rem; font-weight:500; margin-bottom:0.5rem;
+  }
+  .class-card p {
+    font-size:0.85rem; color:var(--text-2); line-height:1.65;
+    margin-bottom:1rem;
+  }
+  .class-items { list-style:none; }
+  .class-items li {
+    font-size:0.82rem; color:var(--text-2);
+    padding:0.3rem 0; padding-left:1.2rem; position:relative;
+  }
+  .class-items li::before {
+    content:'→'; position:absolute; left:0;
+    color:var(--text-3); font-size:0.75rem;
+  }
+
+  /* ALGORITHM */
+  .algo-grid {
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:1px; background:var(--border);
+    border:1px solid var(--border); border-radius:10px;
+    overflow:hidden; margin-bottom:3rem;
+  }
+  .algo-step {
+    background:var(--surface); padding:2rem 1.5rem;
+    transition:background 0.2s;
+  }
+  .algo-step:hover { background:var(--surface-2); }
+  .step-num {
+    font-family:'IBM Plex Mono',monospace; font-size:0.65rem;
+    text-transform:uppercase; letter-spacing:0.15em;
+    color:var(--accent); margin-bottom:1rem;
+  }
+  .algo-step h3 { font-size:0.95rem; font-weight:500; margin-bottom:0.5rem; }
+  .algo-step p { font-size:0.82rem; color:var(--text-2); line-height:1.6; }
+  .algo-formula {
+    margin-top:0.75rem; padding:0.6rem 0.75rem;
+    background:var(--bg); border-radius:5px;
+    font-family:'IBM Plex Mono',monospace; font-size:0.75rem;
+    color:var(--gold); border:1px solid var(--border);
+  }
+
+  /* CASE STUDY */
+  .case-study {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; overflow:hidden; margin-bottom:3rem;
+  }
+  .case-header {
+    padding:1.5rem 2rem;
+    background:rgba(255,255,255,0.015);
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .case-oem {
+    font-family:'IBM Plex Mono',monospace; font-size:0.7rem;
+    text-transform:uppercase; letter-spacing:0.15em; color:var(--text-3);
+  }
+  .case-title {
+    font-family:'Newsreader',serif; font-size:1.3rem;
+    font-weight:400; margin-top:0.25rem;
+  }
+  .case-tag {
+    font-family:'IBM Plex Mono',monospace; font-size:0.65rem;
+    padding:0.3rem 0.8rem; border-radius:4px;
+    background:rgba(245,158,11,0.1); color:var(--gold);
+    border:1px solid rgba(245,158,11,0.2);
+    text-transform:uppercase; letter-spacing:0.1em;
+  }
+  .case-body {
+    padding:2rem;
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    gap:2rem;
+  }
+  .case-col h4 {
+    font-family:'IBM Plex Mono',monospace; font-size:0.65rem;
+    text-transform:uppercase; letter-spacing:0.15em;
+    color:var(--text-3); margin-bottom:1rem;
+  }
+  .case-metric {
+    margin-bottom:0.75rem;
+  }
+  .case-metric-val {
+    font-family:'IBM Plex Mono',monospace; font-size:1.1rem;
+    font-weight:400;
+  }
+  .case-metric-label {
+    font-size:0.75rem; color:var(--text-3);
+    text-transform:uppercase; letter-spacing:0.08em;
+    margin-top:0.1rem;
+  }
+
+  /* SAVINGS HIGHLIGHT */
+  .savings-highlight {
+    background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(16,185,129,0.03));
+    border:1px solid rgba(16,185,129,0.2);
+    border-radius:10px; padding:2rem;
+    text-align:center; margin-bottom:3rem;
+  }
+  .savings-label {
+    font-family:'IBM Plex Mono',monospace; font-size:0.7rem;
+    text-transform:uppercase; letter-spacing:0.18em;
+    color:var(--text-3); margin-bottom:0.75rem;
+  }
+  .savings-amount {
+    font-family:'Newsreader',serif;
+    font-size:clamp(3rem,6vw,5rem);
+    font-weight:300; color:var(--green);
+    letter-spacing:-0.03em; line-height:1;
+    margin-bottom:0.5rem;
+  }
+  .savings-sub {
+    font-size:0.9rem; color:var(--text-2);
+  }
+  .savings-breakdown {
+    display:flex; justify-content:center; gap:3rem;
+    margin-top:1.5rem; padding-top:1.5rem;
+    border-top:1px solid rgba(16,185,129,0.1);
+  }
+  .savings-item { text-align:center; }
+  .savings-item-val {
+    font-family:'IBM Plex Mono',monospace; font-size:1rem;
+    color:var(--text);
+  }
+  .savings-item-label {
+    font-size:0.72rem; color:var(--text-3);
+    text-transform:uppercase; letter-spacing:0.1em;
+    margin-top:0.2rem;
+  }
+
+  /* THRESHOLD TABLE */
+  .threshold-table {
+    width:100%; border-collapse:collapse;
+    font-size:0.85rem; margin-bottom:2rem;
+  }
+  .threshold-table th {
+    font-family:'IBM Plex Mono',monospace; font-size:0.65rem;
+    text-transform:uppercase; letter-spacing:0.12em;
+    color:var(--text-3); text-align:left;
+    padding:0.75rem 1rem;
+    border-bottom:1px solid var(--border);
+  }
+  .threshold-table td {
+    padding:0.9rem 1rem;
+    border-bottom:1px solid rgba(255,255,255,0.03);
+    color:var(--text-2);
+  }
+  .threshold-table tr:last-child td { border-bottom:none; }
+  .threshold-table tr:hover td { background:rgba(255,255,255,0.015); }
+  .badge {
+    display:inline-block; padding:0.15rem 0.5rem;
+    border-radius:3px; font-family:'IBM Plex Mono',monospace;
+    font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em;
+  }
+  .badge-env-sm { background:rgba(245,158,11,0.1); color:var(--gold); }
+  .badge-mfg-sm { background:rgba(239,68,68,0.1); color:var(--red); }
+  .badge-inv-sm { background:rgba(37,99,235,0.1); color:var(--accent); }
+
+  /* VALUE PROP */
+  .value-grid {
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:1.5rem;
+  }
+  .value-card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:10px; padding:1.75rem;
+    position:relative; overflow:hidden;
+    transition:all 0.2s;
+  }
+  .value-card:hover { border-color:var(--border-hover); }
+  .value-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    opacity:0; transition:opacity 0.2s;
+  }
+  .value-card:hover::before { opacity:1; }
+  .vc-analysts::before { background:var(--accent); }
+  .vc-insurance::before { background:var(--green); }
+  .vc-oem::before { background:var(--gold); }
+  .value-icon { font-size:1.3rem; margin-bottom:1rem; }
+  .value-card h3 { font-size:0.95rem; font-weight:500; margin-bottom:0.5rem; }
+  .value-card p { font-size:0.82rem; color:var(--text-2); line-height:1.6; margin-bottom:1rem; }
+  .value-use {
+    font-family:'IBM Plex Mono',monospace; font-size:0.65rem;
+    text-transform:uppercase; letter-spacing:0.1em; color:var(--text-3);
+    padding-top:1rem; border-top:1px solid var(--border);
+  }
+
+  /* FOOTER */
+  footer {
+    position:relative; z-index:1; padding:2rem;
+    border-top:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    max-width:1100px; margin:0 auto; flex-wrap:wrap; gap:1rem;
+  }
+  .footer-copy { font-size:0.82rem; color:var(--text-3); }
+  .footer-back {
+    font-size:0.82rem; color:var(--text-3);
+    text-decoration:none; transition:color 0.2s;
+  }
+  .footer-back:hover { color:var(--text-2); }
+
+  @media(max-width:900px) {
+    .map-section { grid-template-columns:1fr; }
+    .class-grid { grid-template-columns:1fr; }
+    .algo-grid { grid-template-columns:1fr; }
+    .stats-row { grid-template-columns:1fr 1fr; }
+    .case-body { grid-template-columns:1fr; gap:1.5rem; }
+    .value-grid { grid-template-columns:1fr; }
+    .savings-breakdown { flex-wrap:wrap; gap:1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Recall<span>Vantage</span></a>
+  <span class="nav-tag">Geographic Intelligence</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-label">Geo · Environmental Analysis</div>
+    <h1>Not every recall<br>is a <em>national</em> recall.</h1>
+    <p class="hero-sub">
+      When complaints cluster geographically, the root cause is often environmental — not a manufacturing defect. 
+      RecallVantage separates the two. The difference is worth billions.
+    </p>
+
+    <div class="insight-box">
+      <div class="insight-icon">💡</div>
+      <div class="insight-text">
+        <h3>The Core Insight</h3>
+        <p>
+          80% of Nissan Rogue fuel pump failures originated in hot climate states (AZ, TX, FL, LA).
+          Hot climate population share: 30%. Stress factor: 2.4×. Classification: <strong style="color:var(--gold)">Environmental stress — not manufacturing defect.</strong>
+          Recommended action: Regional fix ($200M) vs. unnecessary national recall ($2B).
+        </p>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-cell">
+        <div class="stat-val green">$1.8B</div>
+        <div class="stat-label">Savings identified</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val red">2.4×</div>
+        <div class="stat-label">Stress factor (hot zones)</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val gold">80%</div>
+        <div class="stat-label">Complaints in hot states</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val blue">4</div>
+        <div class="stat-label">Climate zone categories</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GEOGRAPHIC DISTRIBUTION -->
+<section>
+  <div class="container">
+    <div class="section-label">Signal Distribution</div>
+    <div class="section-title">Where complaints originate.</div>
+    <p class="section-sub">
+      Geographic concentration reveals environmental causation. A manufacturing defect distributes uniformly across the country. Environmental stress does not.
+    </p>
+
+    <div class="map-section">
+      <div class="map-wrapper">
+        <div class="map-title">
+          <div class="live-dot"></div>
+          US Complaint Heat Map — Nissan Rogue 2020–2026
+        </div>
+        <!-- Schematic US map with SVG -->
+        <svg class="us-map-svg" viewBox="0 0 700 440" xmlns="http://www.w3.org/2000/svg">
+          <rect width="700" height="440" fill="#0c0c10" rx="8"/>
+
+          <!-- State regions schematic -->
+          <!-- Pacific Northwest -->
+          <rect x="30" y="30" width="70" height="60" rx="3" fill="#1a2a1a" stroke="#1e3a1e" stroke-width="1"/>
+          <text x="65" y="65" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#4a7a4a">WA/OR</text>
+
+          <!-- California -->
+          <rect x="30" y="100" width="55" height="130" rx="3" fill="#1a2a1a" stroke="#1e3a1e" stroke-width="1"/>
+          <text x="58" y="170" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#4a7a4a">CA</text>
+
+          <!-- Nevada/Arizona -->
+          <rect x="95" y="100" width="65" height="90" rx="3" fill="#2a1a0a" stroke="#4a2a0a" stroke-width="1.5"/>
+          <text x="128" y="150" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#c07030">NV/AZ</text>
+
+          <!-- New Mexico -->
+          <rect x="95" y="200" width="65" height="60" rx="3" fill="#2a1a0a" stroke="#4a2a0a" stroke-width="1"/>
+          <text x="128" y="235" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#c07030">NM</text>
+
+          <!-- Mountain states -->
+          <rect x="170" y="30" width="70" height="100" rx="3" fill="#1a1a2a" stroke="#2a2a4a" stroke-width="1"/>
+          <text x="205" y="85" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#5a5a9a">MT/ID</text>
+
+          <!-- Colorado/Utah/Wyoming -->
+          <rect x="170" y="140" width="70" height="80" rx="3" fill="#1a1a2a" stroke="#2a2a4a" stroke-width="1"/>
+          <text x="205" y="185" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#5a5a9a">CO/UT</text>
+
+          <!-- Texas - HOT large -->
+          <rect x="170" y="230" width="110" height="110" rx="3" fill="#3a1a0a" stroke="#ef4444" stroke-width="2"/>
+          <text x="225" y="290" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#ef4444" font-weight="bold">TEXAS</text>
+          <text x="225" y="307" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#c07030">310 complaints</text>
+          <!-- Glow -->
+          <circle cx="225" cy="285" r="55" fill="#ef4444" opacity="0.05"/>
+
+          <!-- North Dakota / Minnesota -->
+          <rect x="250" y="30" width="90" height="60" rx="3" fill="#0a1a2a" stroke="#1a3a5a" stroke-width="1.5"/>
+          <text x="295" y="65" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#3a7aaa">MN/ND</text>
+
+          <!-- Great Lakes region -->
+          <rect x="340" y="30" width="90" height="80" rx="3" fill="#0a1a2a" stroke="#1a3a5a" stroke-width="1.5"/>
+          <text x="385" y="75" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#3a7aaa">MI/WI</text>
+
+          <!-- Midwest -->
+          <rect x="250" y="100" width="90" height="80" rx="3" fill="#1a1a2a" stroke="#2a2a4a" stroke-width="1"/>
+          <text x="295" y="145" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#5a5a9a">IA/MO</text>
+
+          <!-- Illinois/Indiana/Ohio -->
+          <rect x="340" y="120" width="90" height="80" rx="3" fill="#1a1a2a" stroke="#2a2a4a" stroke-width="1"/>
+          <text x="385" y="165" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#5a5a9a">IL/OH</text>
+
+          <!-- Arkansas/Louisiana/Mississippi - HOT -->
+          <rect x="250" y="190" width="90" height="70" rx="3" fill="#2a1a0a" stroke="#ef4444" stroke-width="1.5"/>
+          <text x="295" y="229" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#c07030">AR/LA/MS</text>
+
+          <!-- Northeast -->
+          <rect x="440" y="30" width="80" height="100" rx="3" fill="#1a1a2a" stroke="#2a2a4a" stroke-width="1"/>
+          <text x="480" y="85" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#5a5a9a">NY/PA/NJ</text>
+
+          <!-- Virginia/Carolinas -->
+          <rect x="440" y="140" width="80" height="70" rx="3" fill="#1a2a1a" stroke="#1e3a1e" stroke-width="1"/>
+          <text x="480" y="179" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#4a7a4a">VA/NC/SC</text>
+
+          <!-- Georgia - HOT -->
+          <rect x="440" y="220" width="60" height="60" rx="3" fill="#2a1a0a" stroke="#ef4444" stroke-width="1.5"/>
+          <text x="470" y="254" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#c07030">GA</text>
+          <text x="470" y="267" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#c07030">140 cmpls</text>
+
+          <!-- Florida - HOTTEST -->
+          <rect x="440" y="290" width="100" height="80" rx="3" fill="#3a1a0a" stroke="#ef4444" stroke-width="2.5"/>
+          <text x="490" y="335" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#ef4444" font-weight="bold">FLORIDA</text>
+          <text x="490" y="350" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#c07030">420 complaints</text>
+          <circle cx="490" cy="330" r="50" fill="#ef4444" opacity="0.06"/>
+
+          <!-- Alaska inset -->
+          <rect x="30" y="360" width="80" height="60" rx="3" fill="#0a1a2a" stroke="#1a3a5a" stroke-width="1"/>
+          <text x="70" y="395" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#3a7aaa">AK</text>
+
+          <!-- Hawaii inset -->
+          <rect x="125" y="370" width="60" height="40" rx="3" fill="#2a1a0a" stroke="#4a2a0a" stroke-width="1"/>
+          <text x="155" y="394" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#c07030">HI</text>
+
+          <!-- Arizona standalone label -->
+          <rect x="95" y="100" width="65" height="90" rx="3" fill="#3a1a0a" stroke="#ef4444" stroke-width="2"/>
+          <text x="128" y="142" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#ef4444" font-weight="bold">AZ/NV</text>
+          <text x="128" y="158" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#c07030">290 cmpls</text>
+
+          <!-- Legend -->
+          <rect x="550" y="50" width="130" height="130" rx="6" fill="#0c0c10" stroke="#1a1a2a" stroke-width="1"/>
+          <text x="615" y="72" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#7a7a8a" text-transform="uppercase">INTENSITY</text>
+          <rect x="565" y="82" width="12" height="12" rx="2" fill="#3a1a0a" stroke="#ef4444" stroke-width="1.5"/>
+          <text x="584" y="93" font-family="IBM Plex Mono" font-size="8" fill="#c07030">Hot · High risk</text>
+          <rect x="565" y="102" width="12" height="12" rx="2" fill="#2a1a0a" stroke="#c07030" stroke-width="1"/>
+          <text x="584" y="113" font-family="IBM Plex Mono" font-size="8" fill="#9a7a4a">Hot · Medium</text>
+          <rect x="565" y="122" width="12" height="12" rx="2" fill="#0a1a2a" stroke="#1a3a5a" stroke-width="1"/>
+          <text x="584" y="133" font-family="IBM Plex Mono" font-size="8" fill="#3a7aaa">Cold · Low risk</text>
+          <rect x="565" y="142" width="12" height="12" rx="2" fill="#1a1a2a" stroke="#2a2a4a" stroke-width="1"/>
+          <text x="584" y="153" font-family="IBM Plex Mono" font-size="8" fill="#5a5a9a">Moderate</text>
+          <rect x="565" y="162" width="12" height="12" rx="2" fill="#1a2a1a" stroke="#1e3a1e" stroke-width="1"/>
+          <text x="584" y="173" font-family="IBM Plex Mono" font-size="8" fill="#4a7a4a">Mild · Baseline</text>
+
+          <!-- Total annotation -->
+          <text x="350" y="410" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#555">Total: 1,988 complaints | 60% in hot states (30% of US population) | Stress: 2.0×</text>
+        </svg>
+      </div>
+
+      <div class="zones-stack">
+        <div class="zone-card">
+          <div class="zone-icon">🔥</div>
+          <div class="zone-info">
+            <div class="zone-name">Hot / Humid</div>
+            <div class="zone-states">FL · LA · GA · SC · AL</div>
+          </div>
+          <div class="zone-right">
+            <div class="zone-pct pct-hot">740 (37%)</div>
+            <div class="zone-stress">Stress 3.1×</div>
+          </div>
+        </div>
+        <div class="zone-card">
+          <div class="zone-icon">🌵</div>
+          <div class="zone-info">
+            <div class="zone-name">Hot / Dry</div>
+            <div class="zone-states">AZ · NV · NM · TX desert</div>
+          </div>
+          <div class="zone-right">
+            <div class="zone-pct pct-hot">850 (43%)</div>
+            <div class="zone-stress">Stress 3.6×</div>
+          </div>
+        </div>
+        <div class="zone-card">
+          <div class="zone-icon">❄️</div>
+          <div class="zone-info">
+            <div class="zone-name">Cold</div>
+            <div class="zone-states">MN · WI · MI · ND · ME</div>
+          </div>
+          <div class="zone-right">
+            <div class="zone-pct pct-cold">120 (6%)</div>
+            <div class="zone-stress">Stress 0.8×</div>
+          </div>
+        </div>
+        <div class="zone-card">
+          <div class="zone-icon">🌤️</div>
+          <div class="zone-info">
+            <div class="zone-name">Moderate</div>
+            <div class="zone-states">WA · OR · CA coast · CO</div>
+          </div>
+          <div class="zone-right">
+            <div class="zone-pct pct-mid">278 (14%)</div>
+            <div class="zone-stress">Stress 0.9×</div>
+          </div>
+        </div>
+        <div style="padding:1rem; background:var(--surface); border:1px solid rgba(245,158,11,0.2); border-radius:8px; background:rgba(245,158,11,0.04);">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--gold); margin-bottom:0.4rem;">Verdict</div>
+          <div style="font-size:0.85rem; color:var(--text-2); line-height:1.6;">
+            80% of failures in hot states that represent 30% of US population.
+            <strong style="color:var(--text);">Environmental stress — not a manufacturing defect.</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLASSIFICATION -->
+<section>
+  <div class="container">
+    <div class="section-label">Root Cause Classification</div>
+    <div class="section-title">Two outcomes. Billions apart.</div>
+    <p class="section-sub">
+      The geographic signature determines whether a recall is necessary — and whether it needs to be national.
+    </p>
+
+    <div class="class-grid">
+      <div class="class-card environmental">
+        <div class="class-header">
+          <span class="class-badge badge-env">Environmental</span>
+        </div>
+        <h3>🔥 Geographic Clustering Detected</h3>
+        <p>
+          Complaints over-indexed in specific climate zones. The component failure pattern correlates with heat, cold, salt, or humidity — not with production batch or model variant.
+        </p>
+        <ul class="class-items">
+          <li>Regional service bulletin only</li>
+          <li>Enhanced component spec for affected climates</li>
+          <li>Proactive outreach to regional customers</li>
+          <li>No national recall required</li>
+          <li>80–90% cost reduction vs full recall</li>
+        </ul>
+      </div>
+      <div class="class-card manufacturing">
+        <div class="class-header">
+          <span class="class-badge badge-mfg">Manufacturing Defect</span>
+        </div>
+        <h3>⚠️ Uniform Distribution Detected</h3>
+        <p>
+          Complaints distributed proportionally to population across all regions. No climate correlation. The defect is in the design or production — affects all units regardless of location.
+        </p>
+        <ul class="class-items">
+          <li>National recall required</li>
+          <li>Full production batch investigation</li>
+          <li>Supplier quality review</li>
+          <li>Design specification review</li>
+          <li>Full recall budget applies</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Algorithm -->
+    <div class="section-label">Classification Algorithm</div>
+    <div class="algo-grid">
+      <div class="algo-step">
+        <div class="step-num">Step 01 — Measure</div>
+        <h3>Calculate Stress Factor</h3>
+        <p>For each climate zone, divide observed complaint share by expected share (population proportion).</p>
+        <div class="algo-formula">stress = observed% / expected%</div>
+      </div>
+      <div class="algo-step">
+        <div class="step-num">Step 02 — Match</div>
+        <h3>Component-Climate Correlation</h3>
+        <p>Verify the failing component is physically consistent with the climate pattern. Hot climates → cooling, seals. Cold → battery, fluids.</p>
+        <div class="algo-formula">match = component ∈ climate_profile</div>
+      </div>
+      <div class="algo-step">
+        <div class="step-num">Step 03 — Classify</div>
+        <h3>Recommend Action</h3>
+        <p>If stress factor exceeds threshold AND component matches climate, classify as Environmental and recommend regional fix.</p>
+        <div class="algo-formula">if stress > 1.5 and match → ENV</div>
+      </div>
+    </div>
+
+    <!-- Threshold table -->
+    <table class="threshold-table">
+      <thead>
+        <tr>
+          <th>Stress Factor</th>
+          <th>Classification</th>
+          <th>Recommended Action</th>
+          <th>Estimated Savings</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>≥ 2.0×</strong></td>
+          <td><span class="badge badge-env-sm">Strongly Environmental</span></td>
+          <td>Regional service bulletin</td>
+          <td style="color:var(--green);">80–90%</td>
+        </tr>
+        <tr>
+          <td><strong>1.5 – 2.0×</strong></td>
+          <td><span class="badge badge-inv-sm">Likely Environmental</span></td>
+          <td>Investigate further, partial regional action</td>
+          <td style="color:var(--green);">50–70%</td>
+        </tr>
+        <tr>
+          <td><strong>1.2 – 1.5×</strong></td>
+          <td><span class="badge badge-inv-sm">Inconclusive</span></td>
+          <td>Extended monitoring</td>
+          <td style="color:var(--text-3);">Unknown</td>
+        </tr>
+        <tr>
+          <td><strong>&lt; 1.2×</strong></td>
+          <td><span class="badge badge-mfg-sm">Manufacturing Defect</span></td>
+          <td>National recall</td>
+          <td style="color:var(--text-3);">None</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CASE STUDY -->
+<section>
+  <div class="container">
+    <div class="section-label">Validated Case Study</div>
+    <div class="section-title">Nissan Rogue — $1.8B preserved.</div>
+    <p class="section-sub">
+      The system flagged geographic concentration 37 months before the February 2026 recall announcement. Environmental classification was correct.
+    </p>
+
+    <div class="case-study">
+      <div class="case-header">
+        <div>
+          <div class="case-oem">Nissan Motor Co. · Rogue 2020–2026</div>
+          <div class="case-title">Fuel Pump Failures — Hot Climate Clustering</div>
+        </div>
+        <span class="case-tag">Environmental · Confirmed</span>
+      </div>
+      <div class="case-body">
+        <div class="case-col">
+          <h4>Without Geo Analysis</h4>
+          <div class="case-metric">
+            <div class="case-metric-val" style="color:var(--red);">$2.0B</div>
+            <div class="case-metric-label">National recall cost</div>
+          </div>
+          <div class="case-metric">
+            <div class="case-metric-val">640,000</div>
+            <div class="case-metric-label">Vehicles affected</div>
+          </div>
+          <div class="case-metric">
+            <div class="case-metric-val" style="color:var(--red);">National</div>
+            <div class="case-metric-label">Scope</div>
+          </div>
+        </div>
+        <div class="case-col">
+          <h4>With Geo Analysis</h4>
+          <div class="case-metric">
+            <div class="case-metric-val" style="color:var(--green);">$200M</div>
+            <div class="case-metric-label">Regional fix cost</div>
+          </div>
+          <div class="case-metric">
+            <div class="case-metric-val">80,000</div>
+            <div class="case-metric-label">Vehicles (hot states only)</div>
+          </div>
+          <div class="case-metric">
+            <div class="case-metric-val" style="color:var(--green);">Regional</div>
+            <div class="case-metric-label">Scope</div>
+          </div>
+        </div>
+        <div class="case-col">
+          <h4>Signal Metrics</h4>
+          <div class="case-metric">
+            <div class="case-metric-val" style="color:var(--gold);">2.4×</div>
+            <div class="case-metric-label">Stress factor</div>
+          </div>
+          <div class="case-metric">
+            <div class="case-metric-val">1,988</div>
+            <div class="case-metric-label">Total complaints</div>
+          </div>
+          <div class="case-metric">
+            <div class="case-metric-val" style="color:var(--accent);">37 mo</div>
+            <div class="case-metric-label">Trajectory ahead</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="savings-highlight">
+      <div class="savings-label">Potential Savings — Geo-Targeted vs National</div>
+      <div class="savings-amount">$1.8B</div>
+      <div class="savings-sub">Regional fix ($200M) vs unnecessary national recall ($2B)</div>
+      <div class="savings-breakdown">
+        <div class="savings-item">
+          <div class="savings-item-val">$500K</div>
+          <div class="savings-item-label">Annual subscription</div>
+        </div>
+        <div class="savings-item">
+          <div class="savings-item-val" style="color:var(--green);">3,600×</div>
+          <div class="savings-item-label">ROI — one case</div>
+        </div>
+        <div class="savings-item">
+          <div class="savings-item-val">12</div>
+          <div class="savings-item-label">States targeted</div>
+        </div>
+        <div class="savings-item">
+          <div class="savings-item-val">88%</div>
+          <div class="savings-item-label">Cost reduction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUE BY SEGMENT -->
+<section>
+  <div class="container">
+    <div class="section-label">Value by Segment</div>
+    <div class="section-title">Different intelligence for each decision.</div>
+    <p class="section-sub">
+      The geographic layer delivers distinct value to each of the three market segments RecallVantage serves.
+    </p>
+
+    <div class="value-grid">
+      <div class="value-card vc-oem">
+        <div class="value-icon">⚙️</div>
+        <h3>OEM Manufacturers</h3>
+        <p>Avoid unnecessary national recalls. Identify whether a rising complaint cluster is a design defect or an environmental stress pattern before NHTSA forces action.</p>
+        <ul class="class-items" style="margin-bottom:1rem;">
+          <li>Regional bulletin vs national recall</li>
+          <li>Design spec feedback by climate zone</li>
+          <li>Brand protection — "defect" vs "stress"</li>
+          <li>$200M fix vs $2B exposure</li>
+        </ul>
+        <div class="value-use">Quality &amp; Safety Teams</div>
+      </div>
+      <div class="value-card vc-analysts">
+        <div class="value-icon">📊</div>
+        <h3>Financial Analysts</h3>
+        <p>Geographic clustering changes the trade thesis. A recall caused by environmental stress in 12 states is not a -15% stock event. It might be -2%.</p>
+        <ul class="class-items" style="margin-bottom:1rem;">
+          <li>Prevent false SHORT positions</li>
+          <li>Accurate recall scope estimation</li>
+          <li>Stock impact sizing by region</li>
+          <li>Win rate improvement: 92% → 98%</li>
+        </ul>
+        <div class="value-use">Hedge Funds &amp; Equity Research</div>
+      </div>
+      <div class="value-card vc-insurance">
+        <div class="value-icon">🛡️</div>
+        <h3>Insurance Consortiums</h3>
+        <p>Reserve accuracy depends on recall scope. Geographic intelligence reduces over-provisioning and enables regional premium adjustments for high-stress zones.</p>
+        <ul class="class-items" style="margin-bottom:1rem;">
+          <li>Reserve $200M not $2B</li>
+          <li>Regional underwriting adjustments</li>
+          <li>Climate-risk premium modeling</li>
+          <li>Reinsurance trigger optimization</li>
+        </ul>
+        <div class="value-use">Actuarial &amp; Risk Modeling</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-copy">© 2026 RecallVantage Intelligence · Geographic Analysis Module</span>
+  <a href="index.html" class="footer-back">← Back to main site</a>
+</footer>
+
+</body>
+</html>
