@@ -306,6 +306,7 @@ footer{background:var(--card);border-top:1px solid var(--border);padding:28px 40
     <a href="#evidence">Evidence</a>
     <a href="#segments">Coverage</a>
     <a href="#about">About</a>
+    <a href="geo_analysis.html">Geographic Intel</a>
     <a href="#contact" class="nav-cta">Request Demo</a>
   </div>
 </nav>
@@ -687,7 +688,7 @@ footer{background:var(--card);border-top:1px solid var(--border);padding:28px 40
         <div class="creds">
           <div class="cred"><div class="cred-ic">🎓</div>Ph.D. in Machine Learning / Natural Language Processing</div>
           <div class="cred"><div class="cred-ic">📍</div>Based in Petah Tikva, Israel</div>
-          <div class="cred"><div class="cred-ic">📧</div>shlomi@recallvantage.com</div>
+          <div class="cred"><div class="cred-ic">📧</div><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cebda6a2a1a3a78ebcabadafa2a2b8afa0baafa9abe0ada1a3">[email&#160;protected]</a></div>
           <div class="cred"><div class="cred-ic">🏢</div>Engaged with Anthropic Startup Program</div>
         </div>
       </div>
@@ -734,10 +735,10 @@ footer{background:var(--card);border-top:1px solid var(--border);padding:28px 40
 <footer>
   <div class="f-brand"><span class="f-rv">RV</span><span class="f-name">RecallVantage Research</span></div>
   <div class="f-copy">© 2026 — Secure &amp; Proprietary. All signals validated via temporal backtest.</div>
-  <div class="f-contact">Contact: <a href="mailto:shlomi@recallvantage.com">shlomi@recallvantage.com</a></div>
+  <div class="f-contact">Contact: <a href="/cdn-cgi/l/email-protection#dfacb7b3b0b2b69fadbabcbeb3b3a9beb1abbeb8baf1bcb0b2"><span class="__cf_email__" data-cfemail="4f3c27232022260f3d2a2c2e2323392e213b2e282a612c2022">[email&#160;protected]</span></a></div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 Chart.defaults.color='#8aa0b8';
 Chart.defaults.font.size=11;
 Chart.defaults.font.family="system-ui,-apple-system,sans-serif";
@@ -942,16 +943,4 @@ new Chart(document.getElementById('dashOem'),{type:'scatter',data:{datasets:[
 
   function tick() {
     pos -= 0.55;
-    if (Math.abs(pos) >= singleWidth) pos = 0;
-    track.style.transform = `translateX(${pos}px)`;
-    animId = requestAnimationFrame(tick);
-  }
-
-  const wrap = track.parentElement;
-  wrap.addEventListener('mouseenter', () => cancelAnimationFrame(animId));
-  wrap.addEventListener('mouseleave', () => { animId = requestAnimationFrame(tick); });
-  animId = requestAnimationFrame(tick);
-})();
-</script>
-</body>
-</html>
+    if (Math.abs(pos) >= singleWidth)
